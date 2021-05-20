@@ -98,6 +98,7 @@ public struct RefreshableScrollView<Content: View>: View {
             ActivityIndicator(isAnimating: state == .loading) {
               $0.hidesWhenStopped = false
             }
+            .scaleEffect(1.2, anchor: .center)
           }.offset(y: (state == .loading) ? 0 : -THRESHOLD)
         }
       }
@@ -139,18 +140,26 @@ public struct RefreshableScrollView<Content: View>: View {
 
 private struct ActivityIndicator: UIViewRepresentable {
   public typealias UIView = UIActivityIndicatorView
+  public var style: UIActivityIndicatorView.Style
+  public var color: UIColor
   public var isAnimating: Bool = true
   public var configuration = { (indicator: UIView) in }
+    
+    
 
   public init(isAnimating: Bool, configuration: ((UIView) -> Void)? = nil) {
     self.isAnimating = isAnimating
+    self.style = .medium
+    self.color = UIColor(red: CGFloat(108.0/255.0), green: CGFloat(119.0/255.0), blue: CGFloat(133.0/255.0), alpha: 1)
     if let configuration = configuration {
       self.configuration = configuration
     }
   }
 
   public func makeUIView(context: UIViewRepresentableContext<Self>) -> UIView {
-    UIView()
+    let ActivityIndicator = UIActivityIndicatorView(style: style)
+    ActivityIndicator.color = color
+    return ActivityIndicator
   }
 
   public func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<Self>) {
