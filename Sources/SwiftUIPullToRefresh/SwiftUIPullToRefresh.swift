@@ -62,6 +62,7 @@ private enum RefreshState {
 public struct RefreshableScrollView<Content: View>: View {
   let onRefresh: OnRefresh // the refreshing action
   let content: Content // the ScrollView content
+  let generator = UINotificationFeedbackGenerator()
 
   @State private var state = RefreshState.waiting // the current state
 
@@ -92,7 +93,7 @@ public struct RefreshableScrollView<Content: View>: View {
           // The loading view. It's offset to the top of the content unless we're loading.
           ZStack {
             Rectangle()
-              .foregroundColor(.white)
+                .foregroundColor(.clear)
               .frame(height: THRESHOLD)
             ActivityIndicator(isAnimating: state == .loading) {
               $0.hidesWhenStopped = false
@@ -117,7 +118,7 @@ public struct RefreshableScrollView<Content: View>: View {
             // If the user pulled down below the threshold, prime the view
             if offset > THRESHOLD && state == .waiting {
               state = .primed
-
+              self.generator.notificationOccurred(.success)
             // If the view is primed and we've crossed the threshold again on the
             // way back, trigger the refresh
             } else if offset < THRESHOLD && state == .primed {
